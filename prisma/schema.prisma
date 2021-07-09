@@ -1,0 +1,101 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                Int                 @id @default(autoincrement())
+  name              String              @unique @db.VarChar(50)
+  email             String?
+  password          String?
+  number            String?
+  status            Boolean
+  googleId          Int?
+  googleEmail       String?
+  googleVerified    Boolean?
+  googlePicture     String?
+  estates           Estate[]
+  images            Image[]
+  otp               Otp[]
+  userConversations UserConversations[]
+  messages          Messages[]
+}
+
+model Estate {
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(200)
+  description String   @db.VarChar(1000)
+  Bedrooms    Int
+  Bathrooms   Int
+  Type        String   @db.VarChar(200)
+  status      Boolean
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  userId      Int
+
+  images Image[]
+  user   User    @relation(fields: [userId], references: [id])
+}
+
+model Otp {
+  id         Int      @id @default(autoincrement())
+  type       String   @db.VarChar(100)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  invalid    Boolean
+  userId     Int
+
+  user User @relation(fields: [userId], references: [id])
+
+
+}
+
+model Image {
+  id Int @id @default(autoincrement())
+
+  ownerId Int
+
+  user   User?   @relation(fields: [ownerId], references: [id])
+  estate Estate? @relation(fields: [ownerId], references: [id])
+
+
+}
+
+model Conversation {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  userConversations UserConversations[]
+  Messages          Messages[]
+}
+
+model Messages {
+  id             Int      @id @default(autoincrement())
+  created_at     DateTime @default(now())
+  text           String   @db.VarChar(2000)
+  userId         Int
+  conversationId Int
+
+  conversation Conversation @relation(fields: [conversationId], references: [id])
+  user         User         @relation(fields: [userId], references: [id])
+
+}
+
+model UserConversations {
+  id Int @id @default(autoincrement())
+
+  userId         Int
+  conversationId Int
+
+  user         User         @relation(fields: [userId], references: [id])
+  conversation Conversation @relation(fields: [userId], references: [id])
+
+}
