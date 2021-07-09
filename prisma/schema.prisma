@@ -12,15 +12,15 @@ generator client {
 
 model User {
   id                Int                 @id @default(autoincrement())
-  name              String              @unique @db.VarChar(50)
+  name              String?             @unique @db.VarChar(50)
   email             String?
   password          String?
   number            String?
   status            Boolean
-  googleId          Int?
-  googleEmail       String?
-  googleVerified    Boolean?
-  googlePicture     String?
+  facebookId        Int?
+  facebookEmail     String?
+  facebookName      String?
+  facebookPicture   String?
   estates           Estate[]
   images            Image[]
   otp               Otp[]

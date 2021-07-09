@@ -4,7 +4,7 @@ module.exports = function makeExpressCallback(controller) {
       body: req.body,
       query: req.query,
       params: req.params,
-      ip: req.ip,
+
       method: req.method,
       path: req.path,
       headers: {
@@ -14,12 +14,9 @@ module.exports = function makeExpressCallback(controller) {
       },
     };
     controller(httpRequest)
-      .then((httpResponse) => {
-        if (httpResponse.headers) {
-          res.set(httpResponse.headers);
-        }
-        res.type("json");
-        res.status(httpResponse.statusCode).send(httpResponse.body);
+      .then(({ statusCode, data }) => {
+        res.status(statusCode);
+        return res.json(data);
       })
       .catch((e) =>
         res.status(500).send({ error: "An unkown error occurred." })
